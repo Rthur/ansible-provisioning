@@ -16,6 +16,7 @@ We currently provide the following modules for provisioning:
  - LVM management (lvol)
  - HP iLO (hponcfg, hpilo_facts and hpilo_boot)
  - VMware vSphere (vsphere_facts and vsphere_boot)
+ - VMWare vSphere using pyVim (pyvim_facts)
  - KVM (virt_guest, virt_facts and virt_boot)
  - VirtualBox (vbox_facts and vbox_boot)
  - Amazon EC² (ec2_create)
@@ -33,6 +34,53 @@ We anticipate contributions from users, e.g.
  - RHN (rhn_facts)
 
 Anything that adds facts to systems (wrt. provisioning and/or systems management) has a place in this repository.
+
+About pyvim_facts
+=================
+pyvim_facts correlates much more information that vsphere_facts, using pyVim and pyVMomi. This should lay the foundation for a number of useful vsphere functions in the future. Sample output:
+general: 
+  bios_uuid: 422068cd-7ac0-f874-f3e2-2855d355c9b5
+  datacenter: datacenter_name
+  full_name: Red Hat Enterprise Linux 6 (64-bit)
+  id: rhel6_64Guest
+  instance_uuid: 5020458c-9a4d-7024-b3ef-fe77c2104e49
+  memtotal_mb: 2048
+  name: dev-vm
+  processor_count: 1
+hm_datastore: 
+  capacity: 2198754820096
+  guest_disk: [DATASTORE] dev-vm/dev-vm.vmx
+  guest_disk_sane: DATASTORE/dev-vm/dev-vm.vmx
+  guest_path: [DATASTORE] dev-vm
+  guest_path_sane: DATASTORE/dev-vm
+  max_block_size: 63963136
+  name: DATASTORE
+vm_bios: 
+  bootOrder: []
+vm_network: 
+  eth0: 
+    address_type: assigned
+    mac: 00:50:56:a0:62:9c
+    mac_dash: 00-50-56-a0-62-9c
+    mac_upper: 00:50:56:A0:62:9C
+    summary: dc3-119
+vm_removeable_media: 
+  CD/DVD drive 1: 
+    summary: Remote ATAPI
+    unitNumber: 0
+  CD/DVD drive 2: 
+    summary: Remote ATAPI
+    unitNumber: 1
+  Floppy drive 1: 
+    summary: Remote
+    unitNumber: 0            
+  USB controller : 
+    summary: Auto connect Enabled
+    unitNumber: 22
+vm_state: 
+  host: esx_host
+  power: poweredOff
+  status: green
 
 
 Example provisioning process
@@ -119,6 +167,15 @@ And here is an example of how one would be using hpilo, vsphere, kvm and network
       guest: '{{ cmdb_uuid }}'
     when: cmdb_hwtype.startswith('VMWare ')
     delegate_to: localhost
+
+  ### get vSphere facts using pyvim_facts
+  - pyvim_facts:
+      host: '{{ vsphere_url }}'
+      login: '{{ vsphere_login }}'
+      password: '{{ vsphere_auth }}'
+      guest: '{{ inventory_hostname }}'
+    delegate_to: localhost
+    register: test_facts
 
   ### Get KVM facts (KVM hosts are managed by Ansible as well, guests are named by uuid in KVM)
   - virt_facts:
