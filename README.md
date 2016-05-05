@@ -38,6 +38,8 @@ Anything that adds facts to systems (wrt. provisioning and/or systems management
 About pyvim_facts
 =================
 pyvim_facts correlates much more information that vsphere_facts, using pyVim and pyVMomi. This should lay the foundation for a number of useful vsphere functions in the future. Sample output:
+```yaml
+---
 - general: 
   - bios_uuid: 422068cd-7ac0-f874-f3e2-2855d355c9b5
   - datacenter: datacenter_name
@@ -81,6 +83,7 @@ pyvim_facts correlates much more information that vsphere_facts, using pyVim and
   - host: esx_host
   - power: poweredOff
   - status: green
+```
 
 
 Example provisioning process
